@@ -10,3 +10,4 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     if len(plain_password.encode("utf-8")) > 72:
         plain_password = hashlib.sha256(plain_password.encode("utf-8")).hexdigest()
     return pwd_context.verify(plain_password, hashed_password)
+

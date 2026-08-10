@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: devconnect-backend
+    runtime: python
+    pythonVersion: 3.11
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        scope: build,runtime
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        scope: build,runtime
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        scope: build,runtime
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        scope: build,runtime
+        sync: false
+      - key: SECRET_KEY
+        scope: build,runtime
+        sync: false
+      - key: FRONTEND_URL
+        scope: build,runtime
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+      - key: PYTHONUNBUFFERED
+        value: "1"
+
+  - type: pserv
+    name: devconnect-db
+    ipAllowList: [] # Allow all IPs
+    plan: free
+    postgresSQLVersion: 15

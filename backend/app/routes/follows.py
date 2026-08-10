@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app import models
 from app.auth import get_current_user
-from app.schemas import FollowResponse
 
 router = APIRouter(prefix="/follows", tags=["Follows"])
 
@@ -16,7 +15,7 @@ def get_db():
 
 
 # ✅ Follow a user
-@router.post("/{user_id}", response_model=FollowResponse)
+@router.post("/{user_id}")
 def follow_user(user_id: int, current_user: int = Depends(get_current_user), db: Session = Depends(get_db)):
     if user_id == current_user:
         raise HTTPException(status_code=400, detail="You cannot follow yourself")
@@ -45,7 +44,11 @@ def follow_user(user_id: int, current_user: int = Depends(get_current_user), db:
 
     db.commit()
 
-    return {"message": "Followed successfully"}
+    return {
+        "message": "Followed successfully",
+        "follower_id": current_user,
+        "following_id": user_id,
+    }
     
 
 # ❌ Unfollow a user

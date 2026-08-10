@@ -47,20 +47,55 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
 
 @router.get("/me")
-def read_users_me(current_user: int = Depends(get_current_user)):
-    return {"message": "You are logged in", "user_id": current_user}
+def read_users_me(db: Session = Depends(get_db), current_user: int = Depends(get_current_user)):
+    user = db.query(models.User).filter(models.User.id == current_user).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    followers_count = db.query(models.Follow).filter(models.Follow.following_id == current_user).count()
+    following_count = db.query(models.Follow).filter(models.Follow.follower_id == current_user).count()
+
+    return {
+        "id": user.id,
+        "email": user.email,
+        "is_following": False,
+        "followers_count": followers_count,
+        "following_count": following_count,
+    }
 
 @router.get("/search")
 def search_users(query: str, db: Session = Depends(get_db), current_user: int = Depends(get_current_user)):
     if not query:
         return []
-    
+
     users = db.query(models.User).filter(
-        models.User.email.contains(query),
-        models.User.id != current_user
+        models.User.email.ilike(f"%{query}%")
     ).limit(10).all()
-    
+
     return [{"id": user.id, "email": user.email} for user in users]
+
+@router.get("/{user_id}")
+def get_user_profile(user_id: int, db: Session = Depends(get_db), current_user: int = Depends(get_current_user)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    is_following = db.query(models.Follow).filter(
+        models.Follow.follower_id == current_user,
+        models.Follow.following_id == user_id
+    ).first() is not None
+
+    followers_count = db.query(models.Follow).filter(models.Follow.following_id == user_id).count()
+    following_count = db.query(models.Follow).filter(models.Follow.follower_id == user_id).count()
+
+    return {
+        "id": user.id,
+        "email": user.email,
+        "is_following": is_following,
+        "followers_count": followers_count,
+        "following_count": following_count,
+    }
+
 @router.post("/posts")
 def create_post(post: schemas.PostCreate,
                 db: Session = Depends(get_db),

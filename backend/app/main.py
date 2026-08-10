@@ -2,14 +2,20 @@ from fastapi import FastAPI
 from .database import engine, Base
 from app import models
 from fastapi.middleware.cors import CORSMiddleware
+import os
+from dotenv import load_dotenv
 
-
-
+# Load environment variables
+load_dotenv()
 
 app = FastAPI()
+
+# Get frontend URL from environment, default to localhost for development
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Vite frontend
+    allow_origins=[frontend_url],  # Use environment variable
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

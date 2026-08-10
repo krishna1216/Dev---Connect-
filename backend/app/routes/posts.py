@@ -77,12 +77,16 @@ def create_post(
 
 @router.get("/", response_model=List[schemas.PostOut])
 def get_all_posts(
+    limit: int = 10,
+    offset: int = 0,
     db: Session = Depends(get_db),
     current_user: int = Depends(get_current_user)
 ):
-    posts = db.query(models.Post)\
+    posts =   (db.query(models.Post)\
               .order_by(models.Post.created_at.desc())\
-              .all()
+              .limit(limit)
+              .offset(offset)
+              .all())
 
     return [build_post_response(post, current_user) for post in posts]
 
@@ -108,13 +112,15 @@ def get_user_posts(
     return [build_post_response(post, current_user) for post in posts]
 @router.get("/my", response_model=List[schemas.PostOut])
 def get_my_posts(
+    limit: int = 10,
+    offset: int = 0,
     db: Session = Depends(get_db),
     current_user: int = Depends(get_current_user),
 ):
-    posts = db.query(models.Post).filter(
+    posts = (db.query(models.Post).filter(
         models.Post.owner_id == current_user
-    ).all()
-
+    ).limit(limit).offset(offset).all())
+        
     return [build_post_response(post, current_user) for post in posts]
 
 
