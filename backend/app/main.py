@@ -1,3 +1,4 @@
+from pathlib import Path
 from fastapi import FastAPI
 from .database import engine, Base
 from app import models
@@ -5,17 +6,24 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from backend folder and repo root
+backend_dir = Path(__file__).resolve().parent.parent
+load_dotenv(backend_dir / ".env")
+load_dotenv(backend_dir.parent / ".env")
 
 app = FastAPI()
 
-# Get frontend URL from environment, default to localhost for development
-frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+# Support one or more frontend origins (comma-separated) and Vercel preview domains
+frontend_urls = [
+    origin.strip()
+    for origin in os.getenv("FRONTEND_URL", "http://localhost:5173").split(",")
+    if origin.strip()
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[frontend_url],  # Use environment variable
+    allow_origins=frontend_urls,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

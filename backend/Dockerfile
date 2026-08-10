@@ -11,5 +11,5 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python app/wait_for_db.py && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "python app/wait_for_db.py && uvicorn app.main:app --host=0.0.0.0 --port=8000"]
 

@@ -5,6 +5,9 @@ Thumbs.db
 *.sqlite3
 *.env
 .env.*
+!.env.example
+!backend/.env.example
+!devconnect-frontend/.env.example
 .vscode/
 .idea/
 *.iml

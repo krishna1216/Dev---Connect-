@@ -8,22 +8,26 @@ from urllib.parse import urlparse
 import socket
 import logging
 
-# Load .env file from backend folder
+# Load .env file from backend folder and repo root
 env_path = Path(__file__).resolve().parent.parent / ".env"
+repo_env_path = env_path.parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
+load_dotenv(dotenv_path=repo_env_path, override=False)
 
-# { changed code }
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
-    raise RuntimeError(f"DATABASE_URL environment variable not set in .env (checked {env_path})")
+    raise RuntimeError(f"DATABASE_URL environment variable not set in .env (checked {env_path} and {repo_env_path})")
 
 # Attempt to resolve DB host; if it fails, fall back to a local SQLite dev DB
 parsed = urlparse(DATABASE_URL)
 hostname = parsed.hostname
 try:
-    if hostname:
-        socket.gethostbyname(hostname)
-    engine = create_engine(DATABASE_URL)
+    if DATABASE_URL.startswith("sqlite"):
+        engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+    else:
+        if hostname:
+            socket.gethostbyname(hostname)
+        engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 except Exception as e:
     logging.warning(
         f"Could not resolve/connect to database host '{hostname}': {e}. "
