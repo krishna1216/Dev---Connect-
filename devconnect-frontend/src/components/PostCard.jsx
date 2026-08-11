@@ -4,6 +4,11 @@ import { toggleLike, unlikePost, addComment, getComments, deleteComment, deleteP
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
+const getMediaSrc = (url) => {
+  if (!url) return null;
+  return url.startsWith("http") ? url : `${API_URL}/${url}`;
+};
+
 function PostCard({ post, onPostUpdate }) {
   const [isLiked, setIsLiked] = useState(post.is_liked_by_me || false);
   const [likesCount, setLikesCount] = useState(post.likes_count || 0);
@@ -122,7 +127,7 @@ function PostCard({ post, onPostUpdate }) {
       {/* MEDIA */}
       {post.image_url && (
         <img
-          src={`${API_URL}/${post.image_url}`}
+          src={getMediaSrc(post.image_url)}
           alt="post"
           className="rounded-xl mb-3 w-full"
         />
@@ -130,7 +135,7 @@ function PostCard({ post, onPostUpdate }) {
 
       {post.video_url && (
         <video controls className="rounded-xl mb-3 w-full">
-          <source src={`${API_URL}/${post.video_url}`} />
+          <source src={getMediaSrc(post.video_url)} />
         </video>
       )}
 

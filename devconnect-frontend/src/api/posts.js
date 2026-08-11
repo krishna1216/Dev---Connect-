@@ -9,11 +9,7 @@ export const getFeed = async (page, limit) => {
 
 // CREATE POST
 export const createPost = async (formData) => {
-  const res = await API.post("/posts/", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data"
-    }
-  });
+  const res = await API.post("/posts/", formData);
   return res.data;
 };
 export const getMyPosts = async () => {
