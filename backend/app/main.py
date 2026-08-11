@@ -23,7 +23,7 @@ frontend_urls = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=frontend_urls,
-    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_origin_regex=r"^https://.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
