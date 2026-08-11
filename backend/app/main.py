@@ -16,7 +16,10 @@ app = FastAPI()
 # Support one or more frontend origins (comma-separated) and Vercel preview domains
 frontend_urls = [
     origin.strip()
-    for origin in os.getenv("FRONTEND_URL", "http://localhost:5173").split(",")
+    for origin in os.getenv(
+        "FRONTEND_URL",
+        "http://localhost:5173,https://dev-connect-n2hye55v9-krishna-p-projects.vercel.app"
+    ).split(",")
     if origin.strip()
 ]
 
