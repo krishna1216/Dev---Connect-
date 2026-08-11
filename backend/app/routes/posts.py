@@ -51,7 +51,7 @@ def build_post_response(post, current_user):
 
 
 @router.post("/", response_model=schemas.PostOut)
-def create_post(
+async def create_post(
     content: Optional[str] = Form(None),
     file: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
@@ -60,7 +60,7 @@ def create_post(
     media_url = None   # ✅ ALWAYS DEFINE
 
     if file:
-        media_url = save_file(file)
+        media_url = await save_file(file)
 
     new_post = models.Post(
         content=content,
