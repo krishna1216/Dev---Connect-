@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toggleLike, unlikePost, addComment, getComments, deleteComment, deletePost } from "../api/posts";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 function PostCard({ post, onPostUpdate }) {
   const [isLiked, setIsLiked] = useState(post.is_liked_by_me || false);
   const [likesCount, setLikesCount] = useState(post.likes_count || 0);
@@ -120,7 +122,7 @@ function PostCard({ post, onPostUpdate }) {
       {/* MEDIA */}
       {post.image_url && (
         <img
-          src={`http://localhost:8000/${post.image_url}`}
+          src={`${API_URL}/${post.image_url}`}
           alt="post"
           className="rounded-xl mb-3 w-full"
         />
@@ -128,7 +130,7 @@ function PostCard({ post, onPostUpdate }) {
 
       {post.video_url && (
         <video controls className="rounded-xl mb-3 w-full">
-          <source src={`http://localhost:8000/${post.video_url}`} />
+          <source src={`${API_URL}/${post.video_url}`} />
         </video>
       )}
 
